@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="stuManager">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+<style>
+  .box{
+    position: absolute;
+    left:0;
+    right: 0;
+    top:0;
+    bottom:0;
+    margin:auto;
+    width: 800px;
+    height: 600px;
+  }
+</style>
+<link href="http://cdn.bootcss.com/materialize/0.97.6/css/materialize.css" rel="stylesheet">
+<script src="angular.js"></script>
+<script src="angular-animate.js"></script>
+</head>
+<body ng-controller="mainCtrl"> 
+<div class="box">
+ <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">Logo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li ng-click="type='card'" ng-class="{yellow:type=='card'}"><a href="#">card</a></li>
+        <li ng-click="type='table'" ng-class="{yellow:type=='table'}"><a href="#">table</a></li>
+      </ul>
+    </div>
+  </nav>
+ <div class="row" ng-show="type=='card'">
+        <div class="col s4 " ng-repeat="v in students">
+          <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+              <span class="card-title">{{v.name}}</span>
+            </div>
+            <div class="card-action">
+              <a href="#">{{v.xuehao}}</a>
+              <a href="#">{{v.sex}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+ <table ng-show="type=='table'">
+        <thead>
+          <tr >
+              <th data-field="id">序号</th>
+              <th data-field="name">姓名</th>
+              <th data-field="xuehao">学号</th>
+              <th data-field="sex">性别</th>
+              <th data-field="male">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="(k,v) in students" ng-class="{'blue-text':$first,'purple-text':$middle,'red-text':$last}">
+            <td>{{k+1}}</td>
+            <td><input ng-change="savedate()" type="text" ng-model="v.name" value="v.name"></td>
+            <td><input ng-change="savedate()" type="text" ng-model="v.xuehao" value="v.xuehao"></td>
+            <td><input ng-change="savedate()" type="text" ng-model="v.sex" value="v.sex"></td>
+            <td><a ng-click="deleteStu(k)" class="btn red">delate</a></td>
+          </tr>
+          <tr>
+            <td ng-click="AddStu()"class="btn green">+</td>
+          </tr>
+          <tr ng-if="students.length !==0">
+            <td colspan="5">{{students.length}}</td>            
+          </tr>
+        </tbody>
+  </div>
+</body>
+<script>
+var hanshu = angular.module('stuManager',[]);
+hanshu.controller('mainCtrl',['$scope',function($scope){
+  $scope.type ='table';
+if(localStorage.students){
+  $scope.students=angular.fromJson(localStorage.students)
+}else{
+  $scope.students=[
+{name:'adjgo',xuehao:'2001',sex:'male'},
+{name:'bdjgo',xuehao:'2002',sex:'female'},
+{name:'cdjgo',xuehao:'2003',sex:'male'},
+{name:'ddjgo',xuehao:'2004',sex:'female'},
+];
+}
+$scope.savedate = function(){
+  localStorage.students = angular.toJson(this.students);
+}
+ $scope.deleteStu=function(k){
+  var arr = [];
+  arr = $scope.students.filter(function(v,i){
+    return i!==k;
+  })
+  $scope.students = arr;
+  this.savedate();
+ }
+$scope.AddStu = function(){
+  var shu=($scope.students.length)?Math.max.apply('',$scope.students.map(function(v,k){
+    return v.xuehao;
+  }))+1:2001;
+  var student={
+    name:'',
+    xuehao:shu,
+    sex:''
+  }
+$scope.students.push(student);
+this.savedate();
+}
+}])
+</script>
+</html>
